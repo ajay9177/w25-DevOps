@@ -9,11 +9,11 @@ jobs:
     name: Deploying everything to the staging cluster
     steps:
       - run : |
-          echo ${{secrets.SSH_PRIVATE_KEY}} &> ~/ssh_key
+          echo "${{secrets.SSH_PRIVATE_KEY}}" &> ~/ssh_key
           ssh -i ~/ssh_key root@3.93.70.77
           cd w25-DevOps/ && git pull
           npm install
           npm run build
-          pm2 restart fe-server
-          pm2 restart http-server
-          pm2 restart ws-server
+          pm2 restart fe-Dev
+          pm2 restart http-Dev
+          pm2 restart ws-Dev
