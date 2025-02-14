@@ -1,0 +1,21 @@
+name: Deploy to staging
+on:
+    push:
+        branches:
+            - "main"
+
+jobs:
+  redeploy_everything:
+    runs-on: ubuntu-latest
+    name: Deploying everything to the staging cluster
+  
+    steps:
+      - run: |
+          echo ${{ secrets.SSH_PRIVATE_KEY }} &> ~/ssh_key
+          ssh -i ~/ssh_key ubuntu@54.81.180.45
+          cd w25-DevOps/ && git pull
+          npm install
+          npm run build
+          pm2 restart web-DEV
+          pm2 restart http-DEV
+          pm2 restart ws-Dev
