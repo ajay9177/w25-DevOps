@@ -1,19 +1,32 @@
 name: Deploy to staging
 on:
-    push:
-        branches: [main]
+  push:
+    branches:
+      - main
 
 jobs:
   redeploy_everything:
     runs-on: ubuntu-latest
     name: Deploying everything to the staging cluster
     steps:
-      - run: |
-          echo ${{ secrets.SSH_PRIVATE_KEY }} &> ~/ssh_key
-          ssh -i ~/ssh_key ubuntu@54.81.180.45
-          cd w25-DevOps/ && git pull
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 54.81.180.45 >> ~/.ssh/known_hosts
+
+      - name: Deploy to Staging
+        run: |
+          ssh -i ~/.ssh/id_rsa ubuntu@54.81.180.45 << 'EOF'
+          cd w25-DevOps/
+          git pull
           npm install
           npm run build
           pm2 restart web-DEV
           pm2 restart http-DEV
           pm2 restart ws-Dev
+          EOF
