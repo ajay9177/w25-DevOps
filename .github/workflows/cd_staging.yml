@@ -10,7 +10,7 @@ jobs:
     steps:
       - run : |
           echo "${{secrets.SSH_PRIVATE_KEY}}" &> ~/ssh_key
-          wcho "${{secrets.KNOWN_HOSTS}}" &> ~/.ssh/knowm_hosts
+          wcho "${{secrets.KNOWN_HOSTS}}" &> ~/.ssh/known_hosts
           ssh -i ~/ssh_key root@3.93.70.77
           cd w25-DevOps/ && git pull
           npm install
